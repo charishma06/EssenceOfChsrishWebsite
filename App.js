@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav, Container, Row, Col, Button, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useSelector, useDispatch } from 'react-redux'; 
+import { addToCart, removeFromCart } from './redux/store'; 
 const styles = {
   body: {
     fontFamily: 'Corbel, Comic Sans',
@@ -54,7 +56,32 @@ function App() {
     
   });
 
-  const [cart, setCart] = useState([]);
+const dispatch = useDispatch();
+const cart = useSelector((state) => state.cart); 
+
+  const handleAddToCart = (item) => {
+    dispatch(addToCart(item)); 
+    alert(`Order booked: ${item.name} added to cart!`);
+  };
+
+  const handleRemoveFromCart = (itemToRemove) => {
+    dispatch(removeFromCart(itemToRemove)); 
+    alert(`Order removed: ${itemToRemove.name}`);
+  };
+
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price, 0);
+  };
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+    alert(`Total amount: $${calculateTotal()}. Order Placed.`);
+  };
+
+
   const [visibleCategory, setVisibleCategory] = useState(null);
   const [navExpanded, setNavExpanded] = useState(false);
   const handleNavToggle = () => setNavExpanded(prev => !prev);
@@ -90,27 +117,7 @@ function App() {
     setBookingDetails({ name: '', email: '', guests: 1, time: '' });
   };
 
-  const handleAddToCart = (item) => {
-    setCart((prevCart) => [...prevCart, item]);
-    alert(`Order booked: ${item.name} added to cart!`);
-  };
-
-  const handleRemoveFromCart = (itemToRemove) => {
-    setCart((prevCart) => prevCart.filter(item => item.name !== itemToRemove.name));
-    alert(`Order removed: ${itemToRemove.name}`);
-  };
-
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price, 0);
-  };
-
-  const handleCheckout = () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
-    alert(`Total amount: $${calculateTotal()}. Order Placed.`);
-  };
+ 
 
   const toggleCategory = (category) => {
     setVisibleCategory(visibleCategory === category ? null : category);
